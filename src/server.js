@@ -1,6 +1,10 @@
-const express = require("express");
-const upload = require("./fileUpload.js");
-const fs = require("fs");
+import express from "express";
+import upload from "./fileUpload.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const uploadFile = async (req, res) => {
   try {
@@ -30,7 +34,7 @@ const uploadFile = async (req, res) => {
 
 const getFilesList = (req, res) => {
   const path = __dirname + "/uploads/";
-
+  console.log("path", path);
   fs.readdir(path, function (err, files) {
     if (err) {
       res.status(500).send({
@@ -70,4 +74,4 @@ function crearServidor({ port }) {
   });
 }
 
-module.exports = crearServidor;
+export default crearServidor;

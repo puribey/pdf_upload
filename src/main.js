@@ -1,22 +1,36 @@
-const crearServidor = require("./server.js");
-// const axios = require("axios");
-// const fs = require("fs");
-// const FormData = require("form-data");
+import crearServidor from "./server.js";
+import axios from "axios";
+import fs from "fs";
+import FormData from "form-data";
 
 const main = async () => {
-  await crearServidor({ port: 3000 });
-  //   const filePath = "./fileToUpload/worksheetskindergarten.pdf";
-  //   const pdfData = fs.readFileSync(filePath);
+  const server = await crearServidor({ port: 3000 });
 
-  //   const form = new FormData();
-  //   form.append("file", pdfData);
+  console.log("------------- Upload pdf --------------");
+  const filePath = "./fileToUpload/worksheetskindergarten.pdf";
+  const form = new FormData();
+  form.append("demo", fs.createReadStream(filePath));
+  try {
+    const resPost = await axios({
+      method: "post",
+      url: "http://localhost:3000/upload-file",
+      data: form,
+      headers: {
+        "Content-Type": `multipart/form-data; boundary=${form._boundary}`,
+      },
+    });
+    console.log("Upload response", resPost.data);
+  } catch (err) {
+    console.log(err.message);
+  }
 
-  //   const res = await axios.post("http://localhost:3000/upload-file", form, {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //   });
-  //   console.log(res.data);
-  //   server.close();
+  console.log("------------- Get uploaded pdfs --------------");
+  try {
+    const resGet = await axios.get("http://localhost:3000/files");
+    console.log("Get PDF response", resGet.data);
+  } catch (err) {
+    console.log(err.message);
+  }
+  server.close();
 };
 main();
